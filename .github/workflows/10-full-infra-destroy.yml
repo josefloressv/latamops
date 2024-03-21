@@ -1,0 +1,68 @@
+# This Workflow is used to destroy all the infrastructure provisioned
+# - ECS cluster
+# - services and task definitions
+# - IAM roles
+# - ECR, S3 buckets
+#
+# To use this workflow, you must configure the following GHA Secrets:
+# AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+#
+# and then run the workflow from the UI 
+# 
+
+name: 10 Destroy Dev Infrastructure
+on:
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'     
+        required: true
+        type: environment
+env:
+  AWS_DEFAULT_REGION: us-east-1
+
+jobs:
+  deploy:
+    name: Destroying Infrastructure
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+        S3_BUCKET_NAME: "goweb-terraform-state-bucket-${{ inputs.environment }}"
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: 0.45.0
+
+    - name: Destroy NR setup
+      run: |
+        cd infra/deployments/${{ inputs.environment }}/newrelic-setup
+        terragrunt destroy -auto-approve
+
+    - name: Destroy App01
+      run: |
+        aws ecr delete-repository --repository-name app01-${{ inputs.environment }} --force
+        cd infra/deployments/${{ inputs.environment }}/app/app01
+        terragrunt destroy -auto-approve
+
+    - name: Destroy Fargate Cluster
+      run: |
+        cd infra/deployments/${{ inputs.environment }}/ecs-fargate-cluster/
+        terragrunt destroy -auto-approve
+
+    - name: Destroy Tfstate S3 Bucket
+      run: |
+        aws s3 rb s3://${{ env.S3_BUCKET_NAME}} --force 
+

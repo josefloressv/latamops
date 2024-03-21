@@ -1,0 +1,34 @@
+# This Workflow is used to provision a S3 bucket for Terraform State. 
+# 
+# To use this workflow, you must configure the following GHA Secrets:
+# TESTVAR
+# in two environments: env-a and env-b
+#
+# and then run the workflow from the UI or just change the code in specific places
+# see below the path filters
+# 
+
+name: X Test Env secrets
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'     
+        required: true
+        type: environment
+
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+    - name: hello
+      run: |
+        echo "Hello from the environment ${{ inputs.environment }}"
+
+    - name: secret
+      run: |
+        echo "secret: ${{ secrets.TESTVAR }}"

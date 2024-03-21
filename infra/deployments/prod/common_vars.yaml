@@ -1,0 +1,5 @@
+aws_region: "us-east-1"
+environment: "prod"
+base_tags:
+  Environment: "prod"
+  Terraform: "1.4.0"

@@ -1,0 +1,60 @@
+# This Workflow is used to Provision the entire infrastructure for this project. 
+# 
+# To use this workflow, you must configure the following GHA Secrets:
+# AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+# in two environments: dev and prod
+#
+# and then run the workflow from the UI
+# 
+
+name: 00 Entire Infra Provisioning
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'     
+        required: true
+        type: environment
+env:
+  AWS_DEFAULT_REGION: us-east-1
+
+jobs:
+  provision-s3-bucket:
+    name: Provision s3 bucket
+    uses: ./.github/workflows/01-provision-s3-bucket-for-terraform.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  provision-fargate-cluster:
+    name: Provision Fargate cluster
+    needs: provision-s3-bucket
+    uses: ./.github/workflows/02-provision-fargate-cluster.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  provision-infra-app01:
+    name: Provision Infrastructure for App01
+    needs: provision-fargate-cluster
+    uses: ./.github/workflows/03-provision-app01.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy-app01:
+    name: Deploying app01 NodeJs
+    needs: provision-infra-app01
+    uses: ./.github/workflows/04-build-and-deploy-app01.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+

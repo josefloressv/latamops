@@ -1,0 +1,84 @@
+# This Workflow is used to deploy a ECS Fargate cluster with Terraform. 
+# 
+# To use this workflow, you must configure the following GHA Secrets:
+# AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+# in two environments: dev and prod
+#
+# and then run the workflow from the UI or just change the code in specific places
+# see below the path filters
+# 
+
+name: 02 ECS Fargate cluster
+on:
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+    inputs:
+      environment:
+        description: 'Environment'     
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'     
+        required: true
+        type: environment
+
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - infra/deployments/ecs-fargate-cluster/*
+#      - infra/modules/ecs-fargate-cluster/*
+#      - .github/workflows/02-provision-fargate-cluster.yml
+#      - '!**.md'
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: 0.45.0
+
+    - name: Terragrunt init
+      run: |
+        cd infra/deployments/${{ inputs.environment }}/ecs-fargate-cluster/
+        terragrunt init --terragrunt-non-interactive
+
+    - name: Terragrunt plan
+      run: |
+        cd infra/deployments/${{ inputs.environment }}/ecs-fargate-cluster/
+        terragrunt plan -out terraform.tfplan
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: terraform-plan
+        path: infra/deployments/${{ inputs.environment }}/ecs-fargate-cluster/.terragrunt-cache/**/terraform.tfplan
+        
+    - name: Terragrunt apply
+      run: |
+        cd infra/deployments/${{ inputs.environment }}/ecs-fargate-cluster/
+        terragrunt apply terraform.tfplan

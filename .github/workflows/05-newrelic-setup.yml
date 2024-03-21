@@ -1,0 +1,74 @@
+# This Workflow is used to porovision a the resources for new relic setup:
+# - IAM role required for new relic wizard setup
+#
+# To use this workflow, you must configure the following GHA Secrets:
+# AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+#
+# and then run the workflow from the UI or just change the code in specific places
+# see below the path filters
+# 
+
+name: 05 New Relic Setup
+on:
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+    inputs:
+      environment:
+        description: 'Environment'     
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'     
+        required: true
+        type: environment
+env:
+  AWS_DEFAULT_REGION: us-east-1
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: latest
+
+    - name: Terragrunt init
+      run: |
+        cd infra/deployments/${{ inputs.environment }}/newrelic-setup
+        terragrunt init --terragrunt-non-interactive
+
+    - name: Terragrunt plan
+      run: |
+        cd infra/deployments/${{ inputs.environment }}/newrelic-setup
+        terragrunt plan -out terraform.tfplan
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: terraform-plan
+        path: infra/deployments/${{ inputs.environment }}/newrelic-setup/.terragrunt-cache/**/terraform.tfplan
+        
+    - name: Terragrunt apply
+      run: |
+        cd infra/deployments/${{ inputs.environment }}/newrelic-setup
+        terragrunt apply terraform.tfplan

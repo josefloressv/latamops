@@ -1,0 +1,143 @@
+# This Workflow is used to deploy the App NodeJS. 
+# 
+# To use this workflow, you must configure the following GHA Secrets:
+# AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, NEW_RELIC_LICENSE_KEY
+# in two environments: dev and prod
+#
+# and then run the workflow from the UI
+# 
+
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "app/*"
+      - ".github/workflows/build_and_deploy_app.yml"
+env:
+  AWS_DEFAULT_REGION: us-east-1
+      
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      CLUSTER_NAME: cluster-app-dev
+      SERVICE_NAME: app01-dev
+  
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+        
+    - name: Get AWS Account Number
+      run: echo "AWS_ACCOUNT_NUMBER=$(aws sts get-caller-identity --query 'Account' --output text)" >> $GITHUB_ENV
+
+    - name: Build
+      run: |
+        cd app
+        docker build -t app01-dev --build-arg NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }} .
+
+    - name: ECR Login
+      run: |
+        docker login --username AWS --password $(aws ecr get-login-password --region ${{ env.AWS_DEFAULT_REGION }}) ${{ env.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com
+  
+    - name: Tag
+      run: |
+        docker tag app01-dev:latest ${{ env.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/app01-dev:latest
+
+    - name: Push
+      run: |
+        docker push ${{ env.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/app01-dev:latest
+
+    - name: Create ECS deployment
+      run: |
+        aws ecs update-service --service ${{ env.SERVICE_NAME }} --cluster ${{ env.CLUSTER_NAME }} --desired-count 2 --force-new-deployment
+
+  test:
+    needs: build
+    name: Test
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      AWS_DEFAULT_REGION: us-east-1
+      CLUSTER_NAME: cluster-app-dev
+      SERVICE_NAME: app01-dev
+  
+    steps:
+    - name: Running tests
+      run: echo "Running tests..."
+
+  deploy_dev:
+    needs: test
+    name: Deploy to Dev
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      CLUSTER_NAME: cluster-app-dev
+      SERVICE_NAME: app01-dev
+  
+    steps:
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+        
+    - name: Create ECS deployment
+      run: |
+        aws ecs update-service --service ${{ env.SERVICE_NAME }} --cluster ${{ env.CLUSTER_NAME }} --desired-count 2 --force-new-deployment
+
+  deploy_prod:
+    needs: deploy_dev
+    name: Deploy to Prod
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      CLUSTER_NAME: cluster-app-prod
+      SERVICE_NAME: app01-prod
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+        
+    - name: Get AWS Account Number
+      run: echo "AWS_ACCOUNT_NUMBER=$(aws sts get-caller-identity --query 'Account' --output text)" >> $GITHUB_ENV
+
+    - name: ECR Login
+      run: |
+        docker login --username AWS --password $(aws ecr get-login-password --region ${{ env.AWS_DEFAULT_REGION }}) ${{ env.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com
+
+    - name: Build
+      run: |
+        cd app
+        docker build -t app01-prod --build-arg NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }} .
+
+    - name: Tag
+      run: |
+        docker tag app01-prod:latest ${{ env.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/app01-prod:latest
+
+    - name: Push
+      run: |
+        docker push ${{ env.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/app01-prod:latest
+
+    - name: Create ECS deployment
+      run: |
+        aws ecs update-service --service ${{ env.SERVICE_NAME }} --cluster ${{ env.CLUSTER_NAME }} --desired-count 2 --force-new-deployment
