@@ -66,8 +66,8 @@ docker tag app01-dev:latest 265967435636.dkr.ecr.us-east-1.amazonaws.com/app01-d
 
 01
 
-export AWS_ACCESS_KEY_ID=AKIAY4IEYKSXTLYFR5V4
-export AWS_SECRET_ACCESS_KEY=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
+export AWS_ACCESS_KEY_ID=xxxxx
+export AWS_SECRET_ACCESS_KEY=yyyyyy
 export AWS_DEFAULT_REGION=us-east-1
 
 02
