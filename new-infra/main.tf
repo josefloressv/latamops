@@ -14,12 +14,19 @@ module "ami" {
   source = "./modules/ami_search"
 }
 
-# Cluster
-# ASG
+# ASG and Cluster
 module "asg" {
   source      = "./modules/asg"
   lt_ami_id   = module.ami.id
   asg_subnets = module.net.private_subnet_ids
   asg_vpc_id  = module.net.vpc_id
   tags        = local.common_tags
+}
+
+# ALB
+module "alb" {
+  source         = "./modules/alb"
+  vpc_id         = module.net.vpc_id
+  public_subnets = module.net.public_subnet_ids
+  tags           = local.common_tags
 }

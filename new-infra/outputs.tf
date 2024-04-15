@@ -1,6 +1,7 @@
 output "sts" {
   value = data.aws_caller_identity.current
 }
-output "region" {
-  value = data.aws_region.current
+
+output "lb_dns" {
+  value = module.alb.alb_dns
 }
