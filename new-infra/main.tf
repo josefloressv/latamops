@@ -30,3 +30,9 @@ module "alb" {
   public_subnets = module.net.public_subnet_ids
   tags           = local.common_tags
 }
+
+module "ecr" {
+  source      = "./modules/ecr"
+  tags        = local.common_tags
+  name_prefix = local.name_prefix
+}
