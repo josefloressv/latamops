@@ -1,6 +1,7 @@
 # Network
 module "net" {
   source               = "./modules/network_acg"
+  aws_region           = var.aws_region
   vpc_cidr             = var.vpc_cidr
   private_subnet1_cidr = var.private_subnet1_cidr
   private_subnet2_cidr = var.private_subnet2_cidr

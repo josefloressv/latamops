@@ -3,11 +3,11 @@ resource "aws_security_group" "vpcendpoints" {
   name   = "${local.name_prefix}-vpc-endpoint"
 
   ingress {
-    description = "Allow HTTPS Inbound From VPC"
+    description = "Allow HTTPS Inbound From Private Subnets"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = [var.private_subnet1_cidr, var.private_subnet2_cidr]
 
   }
   egress {
