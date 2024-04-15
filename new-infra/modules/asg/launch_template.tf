@@ -2,12 +2,12 @@ resource "aws_launch_template" "main" {
   name_prefix = local.name_prefix
   description = "ASG template for ${local.name_prefix}"
 
-  image_id = var.lt_ami_id
+  image_id      = var.lt_ami_id
   instance_type = var.lt_instance_type
-#   key_name = "" # allow access only through SSM
+  #   key_name = "" # allow access only through SSM
 
   user_data = base64encode(templatefile("${path.module}/templates/user_data.tpl", {
-    cluster_name       = aws_ecs_cluster.main.name
+    cluster_name = aws_ecs_cluster.main.name
   }))
 
   ebs_optimized = true
@@ -21,7 +21,7 @@ resource "aws_launch_template" "main" {
       iops       = 3000
       throughput = 125
 
-      encrypted = true
+      encrypted             = true
       delete_on_termination = true
     }
   }
@@ -35,7 +35,7 @@ resource "aws_launch_template" "main" {
   network_interfaces {
     associate_public_ip_address = false
     delete_on_termination       = true
-     security_groups             = [aws_security_group.default.id]
+    security_groups             = [aws_security_group.default.id]
   }
 
   # EC2 detailed monitoring
@@ -48,7 +48,7 @@ resource "aws_launch_template" "main" {
     http_endpoint               = "enabled"
     http_tokens                 = "optional"
     http_put_response_hop_limit = 1
-    instance_metadata_tags = "enabled"
+    instance_metadata_tags      = "enabled"
   }
 
   hibernation_options {

@@ -23,6 +23,11 @@ resource "aws_autoscaling_group" "main" {
     "Default"
   ]
 
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = ""
+    propagate_at_launch = true
+  }
   dynamic "tag" {
     for_each = var.tags
 

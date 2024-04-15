@@ -1,14 +1,14 @@
 resource "aws_iam_instance_profile" "lt" {
   name = "${local.name_prefix}-instance-profile"
   role = aws_iam_role.lt.name
-  tags        = var.tags
+  tags = var.tags
 }
 resource "aws_iam_role" "lt" {
-  name = "${local.name_prefix}-ec2-role"
+  name        = "${local.name_prefix}-ec2-role"
   description = "The IAM role for the ECS/EC2 instances."
 
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
-  tags        = var.tags
+  tags               = var.tags
 }
 
 # ------------------------------------------------------------------------------
@@ -62,14 +62,14 @@ data "aws_iam_policy_document" "ec2" {
   statement {
     effect    = "Allow"
     resources = ["*"]
-    actions   = [
-    "ecs:DiscoverPollEndpoint",
-    "ecs:Poll",
-    "ecs:RegisterContainerInstance",
-    "ecs:StartTelemetrySession",
-    "ecs:SubmitAttachmentStateChanges",
-    "ecs:SubmitContainerStateChange",
-    "ecs:SubmitTaskStateChange",      
+    actions = [
+      "ecs:DiscoverPollEndpoint",
+      "ecs:Poll",
+      "ecs:RegisterContainerInstance",
+      "ecs:StartTelemetrySession",
+      "ecs:SubmitAttachmentStateChanges",
+      "ecs:SubmitContainerStateChange",
+      "ecs:SubmitTaskStateChange",
     ]
   }
 
@@ -105,11 +105,11 @@ data "aws_iam_policy_document" "ec2" {
 # ------------------------------------------------------------------------------
 
 resource "aws_iam_policy" "ec2" {
-  name = "${local.name_prefix}-ecs-ec2"
+  name        = "${local.name_prefix}-ecs-ec2"
   description = "Enables logging and EC2 renaming."
 
   policy = data.aws_iam_policy_document.ec2.json
-  tags        = var.tags
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "lt" {

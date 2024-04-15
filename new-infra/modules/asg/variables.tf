@@ -1,15 +1,15 @@
 # General
-variable "tags"{
-    type = map(string)
+variable "tags" {
+  type = map(string)
 }
 # EC2 Lunch template
 variable "lt_instance_type" {
-    type = string
-    default = "t3.medium"
+  type    = string
+  default = "t3.medium"
 }
 
 variable "lt_ami_id" {
-    type = string
+  type = string
 }
 # variable "lt_security_groups" {
 #     type = list(string)
@@ -18,20 +18,20 @@ variable "lt_ami_id" {
 
 # ASG
 variable "asg_enabled_metrics" {
-    type = list(string)
-    default = []
+  type    = list(string)
+  default = []
 }
 variable "asg_min_size" {
-    type = number
-    default = 1
+  type    = number
+  default = 1
 }
 variable "asg_max_size" {
-    type = number
-    default = 1
+  type    = number
+  default = 1
 }
 variable "asg_subnets" {
-    type = list(string)
+  type = list(string)
 }
 variable "asg_vpc_id" {
-    type = string
+  type = string
 }

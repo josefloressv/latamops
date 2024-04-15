@@ -1,6 +1,6 @@
 data "aws_ami" "selected" {
-  most_recent      = true
-  owners           = ["amazon"]
+  most_recent = true
+  owners      = ["amazon"]
 
   filter {
     name   = "name"
