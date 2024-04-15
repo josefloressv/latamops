@@ -35,7 +35,3 @@ variable "asg_subnets" {
 variable "asg_vpc_id" {
     type = string
 }
-
-variable "cluster_name" {
-    type = string
-}

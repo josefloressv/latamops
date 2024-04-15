@@ -1,4 +1,4 @@
-resource "aws_autoscaling_group" "cluster_asg" {
+resource "aws_autoscaling_group" "main" {
   name = "${local.name_prefix}-v${aws_launch_template.main.latest_version}"
 
   force_delete = true

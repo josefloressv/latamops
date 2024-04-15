@@ -7,7 +7,7 @@ resource "aws_launch_template" "main" {
 #   key_name = "" # allow access only through SSM
 
   user_data = base64encode(templatefile("${path.module}/templates/user_data.tpl", {
-    cluster_name       = var.cluster_name
+    cluster_name       = aws_ecs_cluster.main.name
   }))
 
   ebs_optimized = true
