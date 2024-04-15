@@ -16,11 +16,12 @@ module "ami" {
 
 # ASG and Cluster
 module "asg" {
-  source      = "./modules/asg"
-  lt_ami_id   = module.ami.id
-  asg_subnets = module.net.private_subnet_ids
-  asg_vpc_id  = module.net.vpc_id
-  tags        = local.common_tags
+  source              = "./modules/asg"
+  lt_ami_id           = module.ami.id
+  private_subnets_ids = module.net.private_subnet_ids
+  public_subnets_cidr = local.public_subnets_cidr
+  asg_vpc_id          = module.net.vpc_id
+  tags                = local.common_tags
 }
 
 # ALB
@@ -35,4 +36,20 @@ module "ecr" {
   source      = "./modules/ecr"
   tags        = local.common_tags
   name_prefix = local.name_prefix
+}
+
+module "ecs" {
+  source         = "./modules/ecs"
+  aws_account_id = local.aws_account_id
+  aws_region     = var.aws_region
+  # image_repository_url = module.ecr.repository_url
+  image_repository_url   = "nginx"
+  container_cpu          = 10
+  container_memory_hard  = 512
+  container_port         = 80
+  capacity_provider_name = module.asg.ecs_cluster_capacity_provider_name
+  ecs_cluster_id         = module.asg.ecs_cluster_arn
+  vpc_id                 = module.net.vpc_id
+  alb_http_listener_arn  = module.alb.alb_http_listener_arn
+  tags                   = local.common_tags
 }

@@ -29,9 +29,12 @@ variable "asg_max_size" {
   type    = number
   default = 1
 }
-variable "asg_subnets" {
-  type = list(string)
-}
 variable "asg_vpc_id" {
   type = string
+}
+variable "private_subnets_ids" {
+  type = list(string)
+}
+variable "public_subnets_cidr" {
+  type = list(string)
 }
