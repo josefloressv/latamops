@@ -4,7 +4,7 @@ data "aws_internet_gateway" "main" {
     values = [data.aws_vpc.main.id]
   }
 }
-resource "aws_route_table" "main" {
+resource "aws_route_table" "external" {
   vpc_id = data.aws_vpc.main.id
 
   route {
@@ -13,18 +13,18 @@ resource "aws_route_table" "main" {
   }
 
   tags = merge(var.tags, {
-    Name = "${local.name_prefix}-rt"
+    Name = "${local.name_prefix}-external-rt"
   })
 }
 
 resource "aws_route_table_association" "public1" {
   subnet_id      = aws_subnet.public1.id
-  route_table_id = aws_route_table.main.id
+  route_table_id = aws_route_table.external.id
 }
 
 resource "aws_route_table_association" "public2" {
   subnet_id      = aws_subnet.public2.id
-  route_table_id = aws_route_table.main.id
+  route_table_id = aws_route_table.external.id
 }
 
 resource "aws_route_table" "internal" {
@@ -41,7 +41,7 @@ resource "aws_route_table" "internal" {
   }
 
   tags = merge(var.tags, {
-    Name = "${local.name_prefix}-local-rt"
+    Name = "${local.name_prefix}-internal-rt"
   })
 }
 
