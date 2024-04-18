@@ -77,3 +77,12 @@ if [ "_${TFACTION}" == "_apply" ]; then
     -input=false \
     -var-file="$VAR_FILE"
 fi
+
+# Destroy
+if [ "_${TFACTION}" == "_destroy" ]; then
+  echo "Running Terraform Destroy"
+  terraform destroy \
+    -input=false \
+    -var-file="$VAR_FILE"
+fi
+
