@@ -44,10 +44,10 @@ module "ecs" {
   aws_account_id = local.aws_account_id
   aws_region     = var.aws_region
   # image_repository_url = module.ecr.repository_url
-  image_repository_url   = "nginx"
-  container_cpu          = 10
-  container_memory_hard  = 512
-  container_port         = 80
+  image_repository_url   = "533267318629.dkr.ecr.us-east-1.amazonaws.com/ecsdemo-frontend"
+  container_cpu          = 25
+  container_memory_hard  = 1024
+  container_port         = 3000
   capacity_provider_name = module.asg.ecs_cluster_capacity_provider_name
   ecs_cluster_id         = module.asg.ecs_cluster_arn
   vpc_id                 = module.net.vpc_id
