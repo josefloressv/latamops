@@ -44,8 +44,6 @@ data "aws_iam_policy_document" "exec" {
       "ecr:BatchGetImage",
       "ecr:GetDownloadUrlForLayer",
       "ecs:TagResource",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
     ]
     resources = [
       "arn:aws:ecr:us-east-1:${var.aws_account_id}:repository/${local.name_prefix}*",
