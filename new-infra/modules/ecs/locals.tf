@@ -1,6 +1,6 @@
 locals {
-  name_prefix       = "${var.tags.Application}-${var.tags.Environment}"
-  ssm_prefix_path   = join("/", [var.tags.Application, var.tags.Environment])
+  name_prefix       = "${var.tags.Application}-${var.tags.Environment}${var.name_sufix}"
+  ssm_prefix_path   = join("/", [var.tags.Application, "${var.tags.Environment}${var.name_sufix}"])
   current_image_tag = aws_ssm_parameter.deploy_tag.insecure_value
   task_placement_strategy_rules = [
     {

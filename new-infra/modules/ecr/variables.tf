@@ -2,6 +2,6 @@ variable "tags" {
   type = map(string)
 }
 
-variable "name_prefix" {
+variable "name_sufix" {
   type = string
 }

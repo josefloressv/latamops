@@ -40,3 +40,7 @@ variable "vpc_id" {
 variable "alb_http_listener_arn" {
   type = string
 }
+
+variable "name_sufix" {
+  type = string
+}

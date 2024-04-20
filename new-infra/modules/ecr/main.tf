@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "main" {
-  name                 = var.name_prefix
+  name                 = "${local.name_prefix}${var.name_sufix}"
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {

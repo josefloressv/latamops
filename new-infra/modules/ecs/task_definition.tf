@@ -26,7 +26,7 @@ resource "aws_ecs_task_definition" "main" {
       secrets = [
         {
           name      = "SECRET_TEST"
-          valueFrom = "/${local.ssm_prefix_path}/deploy_tag"
+          valueFrom = "${aws_ssm_parameter.deploy_tag.arn}"
         }
       ]
       mountPoints = []
