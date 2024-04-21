@@ -43,7 +43,7 @@ fi
 terraform fmt
 
 # Initialize
-echo "Initializing Terraform"
+echo "Initializing Terraform..."
 terraform init \
   -input=false \
   -reconfigure
@@ -52,11 +52,11 @@ terraform init \
   # -backend-config="region=${TF_STATE_BACKEND_REGION}"
 
 # Validate
-echo "Terraform Validate"
+echo "Terraform validate..."
 terraform validate
 
 # Create or switch Terraform workspace
-echo "Creating or switching Terraform workspace"
+echo "Creating or switching Terraform workspace..."
 CUR_WORKSPACE=$(terraform workspace show)
 if [ "_${CUR_WORKSPACE}" != "_${ENV}" ]; then
   (terraform workspace list | grep "$ENV" \
@@ -64,23 +64,27 @@ if [ "_${CUR_WORKSPACE}" != "_${ENV}" ]; then
     || terraform workspace new "$ENV"
 fi
 
+# Imports goes here
+# terraform import -var-file="$VAR_FILE" [tfstat elemental] [aws arn/id]
+
 # Plan
-echo "Running Terraform Plan"
+echo "Running Terraform plan..."
 terraform plan \
   -input=false \
-  -var-file="$VAR_FILE"
+  -var-file="$VAR_FILE" \
+  -out="$ENV.tfplan"
 
 # Apply
 if [ "_${TFACTION}" == "_apply" ]; then
-  echo "Running Terraform Apply"
+  echo "Running Terraform apply..."
   terraform apply \
-    -input=false \
-    -var-file="$VAR_FILE"
+    -auto-approve=true \
+    "$ENV.tfplan"
 fi
 
 # Destroy
 if [ "_${TFACTION}" == "_destroy" ]; then
-  echo "Running Terraform Destroy"
+  echo "Running Terraform destroy..."
   terraform destroy \
     -input=false \
     -var-file="$VAR_FILE"
