@@ -7,8 +7,10 @@ resource "aws_lb_listener_rule" "main" {
   }
   condition {
     path_pattern {
-      values = ["/"]
+      values = ["/*"]
     }
   }
   tags = var.tags
+
+  depends_on = [ aws_lb_target_group.main ]
 }

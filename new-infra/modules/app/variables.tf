@@ -44,3 +44,7 @@ variable "alb_http_listener_arn" {
 variable "name_sufix" {
   type = string
 }
+
+variable "health_check_path" {
+  type = string
+}

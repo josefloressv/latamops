@@ -25,7 +25,7 @@ resource "aws_lb_target_group" "main" {
     matcher  = "200-299"
     protocol = "HTTP"
     port     = "traffic-port"
-    path     = "/"
+    path     = var.health_check_path
 
     timeout             = 5
     healthy_threshold   = 3

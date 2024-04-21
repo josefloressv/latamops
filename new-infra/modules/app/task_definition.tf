@@ -39,13 +39,13 @@ resource "aws_ecs_task_definition" "main" {
           awslogs-stream-prefix = "ecs"
         }
       }
-      healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:${var.container_port}/ || exit 1"]
-        interval    = 10
-        timeout     = 2
-        retries     = 2
-        startPeriod = 40
-      }
+      # healthCheck = {
+      #   command     = ["CMD-SHELL", "curl -f http://localhost:${var.container_port}/ || exit 1"]
+      #   interval    = 10
+      #   timeout     = 2
+      #   retries     = 2
+      #   startPeriod = 40
+      # }
     }
   ])
 
