@@ -16,8 +16,8 @@ module "ami" {
 }
 
 # ASG and Cluster
-module "asg" {
-  source              = "./modules/asg"
+module "asg_ecs" {
+  source              = "./modules/asg_ecs"
   lt_ami_id           = module.ami.id
   private_subnets_ids = module.net.private_subnet_ids
   public_subnets_cidr = local.public_subnets_cidr
@@ -33,70 +33,26 @@ module "alb" {
   tags           = local.common_tags
 }
 
-module "ecr_frontend" {
+module "ecr_petclinic" {
   source     = "./modules/ecr"
   tags       = local.common_tags
-  name_sufix = "-frontend"
-}
-module "ecr_nodejs" {
-  source     = "./modules/ecr"
-  tags       = local.common_tags
-  name_sufix = "-nodejs"
+  name_sufix = "-petclinic"
 }
 
-module "ecs_frontend" {
-  source         = "./modules/ecs"
-  aws_account_id = local.aws_account_id
-  aws_region     = var.aws_region
-  # image_repository_url = module.ecr.repository_url
-  image_repository_url   = module.ecr_frontend.repository_url
+module "app_petclinic" {
+  source                 = "./modules/app"
+  aws_account_id         = local.aws_account_id
+  aws_region             = var.aws_region
+  image_repository_url   = module.ecr_petclinic.repository_url
   container_cpu          = 25
   container_memory_hard  = 1024
-  container_port         = 3000
-  capacity_provider_name = module.asg.ecs_cluster_capacity_provider_name
-  ecs_cluster_id         = module.asg.ecs_cluster_arn
+  container_port         = 8080
+  health_check_path      = "/actuator/health"
+  capacity_provider_name = module.asg_ecs.ecs_cluster_capacity_provider_name
+  ecs_cluster_id         = module.asg_ecs.ecs_cluster_arn
   vpc_id                 = module.net.vpc_id
   alb_http_listener_arn  = module.alb.alb_http_listener_arn
   tags                   = local.common_tags
-  name_sufix             = "-frontend"
-}
-
-module "ecs_nodejs" {
-  source         = "./modules/ecs"
-  aws_account_id = local.aws_account_id
-  aws_region     = var.aws_region
-  # image_repository_url = module.ecr.repository_url
-  image_repository_url   = module.ecr_nodejs.repository_url
-  container_cpu          = 25
-  container_memory_hard  = 1024
-  container_port         = 3000
-  capacity_provider_name = module.asg.ecs_cluster_capacity_provider_name
-  ecs_cluster_id         = module.asg.ecs_cluster_arn
-  vpc_id                 = module.net.vpc_id
-  alb_http_listener_arn  = module.alb.alb_http_listener_arn
-  tags                   = local.common_tags
-  name_sufix             = "-nodejs"
-}
-
-module "ecr_edwin" {
-  source     = "./modules/ecr"
-  tags       = local.common_tags
-  name_sufix = "-edwin"
-}
-
-module "ecs_frontend_edwin" {
-  source         = "./modules/ecs"
-  aws_account_id = local.aws_account_id
-  aws_region     = var.aws_region
-  # image_repository_url = module.ecr.repository_url
-  image_repository_url   = module.ecr_edwin.repository_url
-  container_cpu          = 25
-  container_memory_hard  = 1024
-  container_port         = 3000
-  capacity_provider_name = module.asg.ecs_cluster_capacity_provider_name
-  ecs_cluster_id         = module.asg.ecs_cluster_arn
-  vpc_id                 = module.net.vpc_id
-  alb_http_listener_arn  = module.alb.alb_http_listener_arn
-  tags                   = local.common_tags
-  name_sufix             = "-edwin"
+  name_sufix             = "-petclinic"
+  depends_on             = [module.asg_ecs]
 }
