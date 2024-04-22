@@ -64,6 +64,7 @@ module "app_petclinic" {
   health_check_path      = "/actuator/health"
   capacity_provider_name = module.asg_ecs.ecs_cluster_capacity_provider_name
   ecs_cluster_id         = module.asg_ecs.ecs_cluster_arn
+  ecs_cluster_name       = module.asg_ecs.ecs_cluster_name
   vpc_id                 = module.net.vpc_id
   alb_http_listener_arn  = module.alb.alb_http_listener_arn
   tags                   = local.common_tags
