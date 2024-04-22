@@ -37,3 +37,20 @@ variable "public_subnet1_cidr" {
 variable "public_subnet2_cidr" {
   type = string
 }
+
+# DB
+variable "database_name" {
+  type = string
+}
+
+variable "database_master_username" {
+  type = string
+}
+
+variable "database_master_password" {
+  type = string
+}
+
+variable "database_instance_class" {
+  type = string
+}

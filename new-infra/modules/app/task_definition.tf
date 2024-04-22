@@ -25,9 +25,17 @@ resource "aws_ecs_task_definition" "main" {
       ]
       secrets = [
         {
-          name      = "SECRET_TEST"
-          valueFrom = "${aws_ssm_parameter.deploy_tag.arn}"
-        }
+          name      = "MYSQL_URL"
+          valueFrom = "${aws_ssm_parameter.mysql_jdb_url.arn}"
+        },
+        {
+          name      = "MYSQL_USER"
+          valueFrom = "${aws_ssm_parameter.mysql_username.arn}"
+        },
+        {
+          name      = "MYSQL_PASS"
+          valueFrom = "${aws_ssm_parameter.mysql_password.arn}"
+        },
       ]
       mountPoints = []
       volumesFrom = []

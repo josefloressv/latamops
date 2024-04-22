@@ -10,6 +10,25 @@ module "net" {
   tags                 = local.common_tags
 }
 
+# ECR
+module "ecr_petclinic" {
+  source     = "./modules/ecr"
+  tags       = local.common_tags
+  name_sufix = "-petclinic"
+}
+
+# DB
+module "db" {
+  source             = "./modules/rds-aurora"
+  tags               = local.common_tags
+  vpc_id             = module.net.vpc_id
+  availability_zones = ["us-east-1b", "us-east-1c", "us-east-1d"]
+  database_name      = var.database_name
+  master_username    = var.database_master_username
+  master_password    = var.database_master_password
+  instance_class     = var.database_instance_class
+}
+
 # AMI
 module "ami" {
   source = "./modules/ami_search"
@@ -33,12 +52,7 @@ module "alb" {
   tags           = local.common_tags
 }
 
-module "ecr_petclinic" {
-  source     = "./modules/ecr"
-  tags       = local.common_tags
-  name_sufix = "-petclinic"
-}
-
+# ECS App
 module "app_petclinic" {
   source                 = "./modules/app"
   aws_account_id         = local.aws_account_id

@@ -9,3 +9,7 @@ output "lb_dns" {
 output "ecr_petclinic" {
   value = module.ecr_petclinic.repository_url
 }
+
+output "db_writer_endpoint" {
+  value = module.db.cluster_writer_endpoint
+}
