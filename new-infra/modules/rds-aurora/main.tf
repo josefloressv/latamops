@@ -7,7 +7,7 @@ resource "aws_rds_cluster" "main" {
   availability_zones              = var.availability_zones
   database_name                   = var.database_name
   master_username                 = var.master_username
-  master_password                 = var.master_password
+  master_password                 = var.master_password # Updates via AWS console
   backup_retention_period         = 1
   preferred_backup_window         = "07:00-06:00"
   apply_immediately               = true
@@ -16,6 +16,9 @@ resource "aws_rds_cluster" "main" {
   vpc_security_group_ids          = [aws_security_group.default.id]
   tags                            = var.tags
   copy_tags_to_snapshot           = true
+  lifecycle {
+    ignore_changes = [ master_password ]
+  }
 }
 
 resource "aws_rds_cluster_instance" "default" {
