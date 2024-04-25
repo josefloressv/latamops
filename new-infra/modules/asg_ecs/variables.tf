@@ -38,3 +38,23 @@ variable "private_subnets_ids" {
 variable "public_subnets_cidr" {
   type = list(string)
 }
+
+variable "cp_instance_warmup_period" {
+  type = number
+  default = 30
+}
+
+variable "cp_min_scaling_step_size" {
+  type = number
+  default = 1
+}
+
+variable "cp_max_scaling_step_size" {
+  type = number
+  default = 2
+}
+
+variable "cp_target_capacity" {
+  type = number
+  default = 100
+}

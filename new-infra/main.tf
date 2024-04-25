@@ -36,12 +36,18 @@ module "ami" {
 
 # ASG and Cluster
 module "asg_ecs" {
-  source              = "./modules/asg_ecs"
-  lt_ami_id           = module.ami.id
-  private_subnets_ids = module.net.private_subnet_ids
-  public_subnets_cidr = local.public_subnets_cidr
-  asg_vpc_id          = module.net.vpc_id
-  tags                = local.common_tags
+  source                    = "./modules/asg_ecs"
+  lt_ami_id                 = module.ami.id
+  private_subnets_ids       = module.net.private_subnet_ids
+  public_subnets_cidr       = local.public_subnets_cidr
+  asg_vpc_id                = module.net.vpc_id
+  tags                      = local.common_tags
+  asg_min_size              = var.asg_min_size
+  asg_max_size              = var.asg_max_size
+  cp_instance_warmup_period = var.cp_instance_warmup_period
+  cp_min_scaling_step_size  = var.cp_min_scaling_step_size
+  cp_max_scaling_step_size  = var.cp_max_scaling_step_size
+  cp_target_capacity        = var.cp_target_capacity
 }
 
 # ALB
@@ -58,8 +64,8 @@ module "app_petclinic" {
   aws_account_id         = local.aws_account_id
   aws_region             = var.aws_region
   image_repository_url   = module.ecr_petclinic.repository_url
-  container_cpu          = 25
-  container_memory_hard  = 1024
+  container_cpu          = var.container_cpu
+  container_memory_hard  = var.container_memory_hard
   container_port         = 8080
   health_check_path      = "/actuator/health"
   capacity_provider_name = module.asg_ecs.ecs_cluster_capacity_provider_name

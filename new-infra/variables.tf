@@ -48,9 +48,45 @@ variable "database_master_username" {
 }
 
 variable "database_master_password" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "database_instance_class" {
   type = string
+}
+
+# ASG
+variable "asg_min_size" {
+  type = number
+}
+variable "asg_max_size" {
+  type = number
+}
+
+# CP
+variable "cp_instance_warmup_period" {
+  type    = number
+  default = 30
+}
+
+variable "cp_min_scaling_step_size" {
+  type = number
+}
+
+variable "cp_max_scaling_step_size" {
+  type = number
+}
+
+variable "cp_target_capacity" {
+  type = number
+}
+
+# Task
+
+variable "container_cpu" {
+  type = number
+}
+variable "container_memory_hard" {
+  type = number
 }
