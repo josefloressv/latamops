@@ -15,6 +15,7 @@ resource "aws_autoscaling_group" "main" {
   max_size            = var.asg_max_size
 
   enabled_metrics = length(var.asg_enabled_metrics) > 0 ? var.asg_enabled_metrics : null
+  metrics_granularity = "1Minute" # Enable all metrics by default
 
   termination_policies = [
     "OldestLaunchTemplate",
