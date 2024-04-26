@@ -55,41 +55,37 @@ variable "health_check_path" {
 # Auto Scaling
 variable "task_min_number" {
   type = number
-  default = 1
 }
 
 variable "task_max_number" {
   type = number
-  default = 2
 }
 
 variable "cpu_target_threshold" {
   type = number
-  default = 70
 }
 
 variable "cpu_scalein_cooldown_seconds" {
   type = number
-  default = 300
 }
 
 variable "cpu_scaleout_cooldown_seconds" {
   type = number
-  default = 300
 }
 
 
 variable "memory_target_threshold" {
   type = number
-  default = 70
 }
 
 variable "memory_scalein_cooldown_seconds" {
   type = number
-  default = 300
 }
 
 variable "memory_scaleout_cooldown_seconds" {
   type = number
-  default = 300
+}
+
+variable "health_check_grace_period_seconds" {
+  type    = number
 }

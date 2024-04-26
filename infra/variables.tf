@@ -49,7 +49,7 @@ variable "database_master_username" {
 
 variable "database_master_password" {
   type    = string
-  default = ""
+  default = "petclinic"
 }
 
 variable "database_instance_class" {
@@ -88,5 +88,38 @@ variable "container_cpu" {
   type = number
 }
 variable "container_memory_hard" {
+  type = number
+}
+
+# ECS
+variable "task_min_number" {
+  type = number
+}
+
+variable "task_max_number" {
+  type = number
+}
+variable "health_check_grace_period_seconds" {
+  type = number
+}
+variable "memory_target_threshold" {
+  type = number
+}
+variable "memory_scaleout_cooldown_seconds" {
+  type = number
+}
+variable "memory_scalein_cooldown_seconds" {
+  type = number
+}
+
+variable "cpu_target_threshold" {
+  type = number
+}
+
+variable "cpu_scaleout_cooldown_seconds" {
+  type = number
+}
+
+variable "cpu_scalein_cooldown_seconds" {
   type = number
 }

@@ -11,7 +11,7 @@ resource "aws_ecs_service" "service" {
   desired_count                      = var.task_min_number
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
-  health_check_grace_period_seconds  = 30
+  health_check_grace_period_seconds  = var.health_check_grace_period_seconds
   force_new_deployment               = false
   wait_for_steady_state              = false
 

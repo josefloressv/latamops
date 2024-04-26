@@ -17,18 +17,6 @@ module "ecr_petclinic" {
   name_sufix = "-petclinic"
 }
 
-# DB
-module "db" {
-  source             = "./modules/rds-aurora"
-  tags               = local.common_tags
-  vpc_id             = module.net.vpc_id
-  availability_zones = ["us-east-1b", "us-east-1c", "us-east-1d"]
-  database_name      = var.database_name
-  master_username    = var.database_master_username
-  master_password    = var.database_master_password
-  instance_class     = var.database_instance_class
-}
-
 # AMI
 module "ami" {
   source = "./modules/ami_search"
@@ -76,4 +64,29 @@ module "app_petclinic" {
   tags                   = local.common_tags
   name_sufix             = "-petclinic"
   depends_on             = [module.asg_ecs]
+
+  # Auto scaling
+  task_min_number                   = var.task_min_number
+  task_max_number                   = var.task_max_number
+  health_check_grace_period_seconds = var.health_check_grace_period_seconds
+
+  memory_target_threshold          = var.memory_target_threshold
+  memory_scaleout_cooldown_seconds = var.memory_scaleout_cooldown_seconds
+  memory_scalein_cooldown_seconds  = var.memory_scalein_cooldown_seconds
+
+  cpu_target_threshold          = var.cpu_target_threshold
+  cpu_scaleout_cooldown_seconds = var.cpu_scaleout_cooldown_seconds
+  cpu_scalein_cooldown_seconds  = var.cpu_scalein_cooldown_seconds
+}
+
+# DB
+module "db" {
+  source             = "./modules/rds-aurora"
+  tags               = local.common_tags
+  vpc_id             = module.net.vpc_id
+  availability_zones = ["us-east-1b", "us-east-1c", "us-east-1d"]
+  database_name      = var.database_name
+  master_username    = var.database_master_username
+  master_password    = var.database_master_password
+  instance_class     = var.database_instance_class
 }
