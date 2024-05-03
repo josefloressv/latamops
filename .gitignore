@@ -42,3 +42,6 @@ override.tf.json
 
 # NodeJs
 node_modules
+
+# Terraform plan
+*.tfplan

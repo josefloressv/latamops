@@ -1,13 +1,20 @@
-# Deployment
+# Despliegue de la infraestructura
 
-## Requirements
-S3 bucket
+# Configurar las credenciales de AWS CLI
 
-# Best practices
-https://www.bti360.com/organizing-terraform-code-with-terragrunt/
-https://thirstydeveloper.io/
+```bash
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=
+export AWS_REGION=us-east-1
 
+```
 
-https://docs.github.com/es/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-https://github.com/marketplace/actions/terragrunt-installer
-https://github.com/actions/upload-artifact
+``bash
+./deploy-infra.sh dev apply
+```
+
+```
+docker login
+docker tag
+docker push
+```

@@ -12,3 +12,10 @@ La presentación se vuelve aún más cautivadora con Step Scaling. Descubre cóm
 ## Acerca de mí
 * https://latamops.com/speakers/jose-flores/
 * https://www.linkedin.com/in/josefloressv/
+
+## Recursos
+* [Desplegar la infraestructura](./infra/README.md)
+* [Aplicación de ejemplo Spring Pet Clinic lista para contenerizar](https://github.com/josefloressv/devops-cicd-container-java-SpringPetClinic)
+* [Base de Datos](./petclinic-db.sql)
+* [Presentación](./presentacion.pptx)
+* [Diagrama infraestructura](./infra.jpg)
